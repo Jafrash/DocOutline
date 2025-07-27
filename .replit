@@ -1,0 +1,37 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-25_05"
+packages = ["freetype", "gumbo", "harfbuzz", "jbig2dec", "libjpeg_turbo", "mupdf", "openjpeg", "swig", "xcbuild"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "PDF Extractor"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "pdf_extractor_test"
+
+[[workflows.workflow]]
+name = "PDF Extractor"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install PyMuPDF==1.23.14 && python main.py"
+
+[[workflows.workflow]]
+name = "pdf_extractor_test"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "docker build --platform linux/amd64 -t pdf-extractor:latest . && echo \"Build completed successfully\""
