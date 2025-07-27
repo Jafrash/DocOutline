@@ -22,8 +22,11 @@ Preferred communication style: Simple, everyday language.
 **Recent Changes (July 27, 2025)**:
 - Fixed missing input directory issue
 - Created comprehensive test documents
-- Verified end-to-end functionality
-- Application ready for production use
+- Added AI-powered text summarization with OpenAI integration
+- Implemented fallback text summarization for when AI is unavailable
+- Enhanced web interface with drag-and-drop file upload
+- Added real-time processing with visual results display
+- Application ready for production use with both document structure and content analysis
 
 ## System Architecture
 

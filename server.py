@@ -42,7 +42,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <h1>PDF Document Structure Extractor</h1>
-    <p>Upload PDF files to extract their document structure including titles and hierarchical headings (H1-H3).</p>
+    <p>Upload PDF files to extract their document structure including titles, hierarchical headings (H1-H3), and AI-generated summaries.</p>
     
     <form id="uploadForm" enctype="multipart/form-data">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
@@ -130,8 +130,16 @@ HTML_TEMPLATE = """
                 html += `<h3>📄 ${result.filename}</h3>`;
                 html += `<p><strong>Title:</strong> ${result.data.title}</p>`;
                 
+                // Add summary if available
+                if (result.data.summary) {
+                    html += `<h4>📝 AI Summary:</h4>`;
+                    html += `<div style="background: #f8f9fa; border-left: 4px solid #007bff; padding: 15px; margin: 10px 0; border-radius: 0 5px 5px 0;">`;
+                    html += `<p style="margin: 0; line-height: 1.6;">${result.data.summary}</p>`;
+                    html += `</div>`;
+                }
+                
                 if (result.data.outline.length > 0) {
-                    html += `<h4>Document Structure:</h4>`;
+                    html += `<h4>📋 Document Structure:</h4>`;
                     result.data.outline.forEach(item => {
                         const level = item.level.toLowerCase();
                         html += `<div class="heading ${level}">`;
@@ -142,7 +150,7 @@ HTML_TEMPLATE = """
                     html += `<p><em>No headings detected in this document.</em></p>`;
                 }
                 
-                html += `<h4>JSON Output:</h4>`;
+                html += `<h4>📊 JSON Output:</h4>`;
                 html += `<div class="json-output">${JSON.stringify(result.data, null, 2)}</div>`;
                 html += `</div>`;
             });
