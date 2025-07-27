@@ -1,116 +1,161 @@
 # PDF Document Structure Extractor
 
-A high-performance PDF document structure extractor that identifies titles and headings (H1-H3) for hackathon competition Round 1A.
+A high-performance PDF document structure extraction tool with AI-powered content summarization. Extract hierarchical document structure (titles, headings H1-H3) and generate intelligent summaries from PDF documents.
 
-## Overview
+## Features
 
-This solution processes PDF documents up to 50 pages and extracts:
-- Document title
-- Hierarchical headings (H1, H2, H3) with page numbers
-- Outputs structured JSON format
+- 🔍 **Document Structure Extraction**: Automatically identifies titles and hierarchical headings (H1, H2, H3)
+- 🤖 **AI-Powered Summarization**: Generates intelligent content summaries using OpenAI GPT-4o
+- 🌐 **Web Interface**: Easy-to-use drag-and-drop web interface for PDF processing
+- 📁 **Batch Processing**: Process multiple PDFs simultaneously
+- 🔄 **Fallback System**: Text-based summaries when AI is unavailable
+- ⚡ **High Performance**: Optimized for documents up to 50 pages
+- 📋 **JSON Output**: Structured JSON output with titles, headings, and summaries
 
-## Approach
+## Quick Start
 
-### Core Components
+### Prerequisites
 
-1. **PDF Processing**: Uses PyMuPDF (fitz) for fast, reliable PDF text extraction
-2. **Heading Detection**: Rule-based system analyzing font properties, text patterns, and document structure
-3. **Title Extraction**: Combines metadata analysis with first-page text analysis
-4. **Adaptive Classification**: Adjusts heading level thresholds based on document font distribution
+- Python 3.11+
+- OpenAI API key (optional, for AI summaries)
 
-### Detection Strategy
+### Installation
 
-#### Font Analysis
-- Font size comparison against document average
-- Bold/weight detection through font flags and names
-- Adaptive thresholding based on document characteristics
-
-#### Pattern Recognition
-- Numbered headings (1., 1.1, 1.1.1)
-- Chapter/Section markers
-- Common heading keywords
-- Capitalization patterns
-
-#### Positional Analysis
-- Text position within page layout
-- Heading length optimization
-- Page-relative positioning
-
-## Technical Details
-
-### Performance Optimizations
-- CPU-only processing for AMD64 architecture
-- Memory-efficient streaming processing
-- Fast PyMuPDF library for PDF parsing
-- Minimal dependency footprint
-
-### Accuracy Features
-- Multi-factor confidence scoring
-- Adaptive font size thresholds
-- Pattern-based heading classification
-- Text cleaning and normalization
-
-## Building and Running
-
-### Docker Build
+1. Clone the repository:
 ```bash
-docker build --platform linux/amd64 -t pdf-extractor:latest .
+git clone <repository-url>
+cd pdf-document-extractor
 ```
 
-### Docker Run
+2. Install dependencies:
 ```bash
-docker run --rm -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output --network none pdf-extractor:latest
+pip install -r requirements.txt
 ```
 
-## Libraries Used
+3. Set up environment variables (optional):
+```bash
+export OPENAI_API_KEY="your-api-key-here"
+```
 
-### Primary Dependencies
-- **PyMuPDF (fitz) v1.23.14**: Fast, reliable PDF text extraction and analysis
-  - Chosen for superior performance over alternatives like PyPDF2
-  - Provides detailed font and formatting information
-  - Memory-efficient processing of large documents
+### Usage
 
-### Built-in Python Libraries
-- **re**: Regular expression pattern matching for heading detection
-- **pathlib**: Modern path handling and file operations
-- **json**: Standard JSON serialization for output
-- **os**: Environment detection and system operations
+#### Web Interface
 
-## Performance Characteristics
+Start the web server:
+```bash
+python server.py
+```
 
-- **Processing Speed**: < 10 seconds for 50-page documents
-- **Memory Efficiency**: Streaming processing approach
-- **Accuracy**: Multi-factor confidence scoring with adaptive thresholds
-- **Compatibility**: AMD64 architecture, CPU-only processing
-- **Size**: Minimal container footprint with PyMuPDF as only external dependency
+Open your browser to `http://localhost:5000` and upload PDF files through the drag-and-drop interface.
+
+#### Batch Processing
+
+Place PDF files in the `input/` directory and run:
+```bash
+python main.py
+```
+
+Processed JSON files will be saved to the `output/` directory.
+
+#### Programmatic Usage
+
+```python
+from pdf_extractor import PDFExtractor
+
+extractor = PDFExtractor()
+result = extractor.extract_structure("document.pdf", include_summary=True)
+
+print(f"Title: {result['title']}")
+print(f"Summary: {result['summary']}")
+for heading in result['outline']:
+    print(f"{heading['level']}: {heading['text']} (Page {heading['page']})")
+```
+
+## API Endpoints
+
+- `GET /` - Web interface
+- `POST /upload` - Upload and process PDF files
+- `GET /batch` - Process PDFs from input directory
+- `GET /health` - Health check
 
 ## Output Format
-
-The solution generates JSON files with the following structure:
 
 ```json
 {
   "title": "Document Title",
+  "summary": "AI-generated or text-based summary of the document content...",
   "outline": [
-    { "level": "H1", "text": "Introduction", "page": 1 },
-    { "level": "H2", "text": "Background", "page": 1 },
-    { "level": "H3", "text": "History", "page": 2 }
+    {
+      "level": "H1",
+      "text": "Chapter 1: Introduction",
+      "page": 1
+    },
+    {
+      "level": "H2", 
+      "text": "1.1 Overview",
+      "page": 1
+    }
   ]
 }
 ```
 
-## Multilingual Support
+## Architecture
 
-The solution includes basic multilingual handling through:
-- Unicode text preservation with UTF-8 encoding
-- Character-agnostic pattern matching
-- Font-based analysis independent of language
-- Proper JSON serialization with `ensure_ascii=False`
+- **PDF Processing**: PyMuPDF (fitz) for fast, reliable PDF text extraction
+- **Heading Detection**: Rule-based classification with adaptive thresholding
+- **AI Integration**: OpenAI GPT-4o for intelligent content summarization
+- **Web Framework**: Flask for the web interface
+- **Fallback System**: Text analysis when AI is unavailable
 
-## Architecture Summary
+## Configuration
 
-1. **Input Processing**: Automatically scans for all PDF files in input directory
-2. **Document Analysis**: Extracts text with full formatting information
-3. **Heading Detection**: Applies rule-based classification with confidence scoring
-4. **Title Extraction**: Combines metadata and content analysis
-5. **Output Generation**: Creates structured JSON with hierarchical outline
+### Environment Variables
+
+- `OPENAI_API_KEY`: OpenAI API key for AI-powered summaries (optional)
+
+### Processing Limits
+
+- Maximum pages per document: 50
+- Supported formats: PDF only
+- Text truncation for AI: 50,000 characters
+
+## Performance
+
+- Typical processing time: <0.02 seconds per document
+- Memory efficient streaming processing
+- CPU-only operation (no GPU required)
+
+## Error Handling
+
+The system includes comprehensive error handling:
+- Graceful degradation when AI is unavailable
+- Continues processing if individual PDFs fail
+- Detailed error messages in JSON output
+- Automatic fallback to text-based summaries
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For issues and questions:
+1. Check existing issues on GitHub
+2. Create a new issue with detailed description
+3. Include sample PDF files if relevant
+
+## Recent Updates
+
+- Added AI-powered text summarization with OpenAI integration
+- Implemented fallback text summarization for when AI is unavailable
+- Enhanced web interface with drag-and-drop file upload
+- Added real-time processing with visual results display
+- Improved error handling and graceful degradation
