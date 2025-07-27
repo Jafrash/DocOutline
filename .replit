@@ -14,12 +14,17 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "PDF Extractor"
+args = "PDF Extractor Web Server"
 
 [[workflows.workflow]]
-name = "PDF Extractor"
+name = "PDF Extractor Web Server"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install PyMuPDF==1.23.14 && python main.py"
+args = "python server.py"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
