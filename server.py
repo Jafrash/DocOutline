@@ -42,7 +42,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <h1>PDF Document Structure Extractor</h1>
-    <p>Upload PDF files to extract their document structure including titles, hierarchical headings (H1-H3), and AI-generated summaries.</p>
+    <p>Upload PDF files to extract their document structure including titles and hierarchical headings (H1-H3).</p>
     
     <form id="uploadForm" enctype="multipart/form-data">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
@@ -130,13 +130,7 @@ HTML_TEMPLATE = """
                 html += `<h3>📄 ${result.filename}</h3>`;
                 html += `<p><strong>Title:</strong> ${result.data.title}</p>`;
                 
-                // Add summary if available
-                if (result.data.summary) {
-                    html += `<h4>📝 AI Summary:</h4>`;
-                    html += `<div style="background: #f8f9fa; border-left: 4px solid #007bff; padding: 15px; margin: 10px 0; border-radius: 0 5px 5px 0;">`;
-                    html += `<p style="margin: 0; line-height: 1.6;">${result.data.summary}</p>`;
-                    html += `</div>`;
-                }
+                // Summary feature removed for competition requirements
                 
                 if (result.data.outline.length > 0) {
                     html += `<h4>📋 Document Structure:</h4>`;
@@ -196,7 +190,7 @@ def upload_files():
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
                     file.save(temp_file.name)
                     
-                    # Process the PDF
+                    # Process the PDF (no summarization for competition)
                     result = extractor.extract_structure(temp_file.name)
                     
                     results.append({
